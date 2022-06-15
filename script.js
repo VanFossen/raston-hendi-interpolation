@@ -12,7 +12,7 @@ document.getElementById("interpolation").onclick = async function () {
   console.log("  provied parameters");
   console.log("    - temperature: " + props.temperature);
   console.log("    - min_lambda: " + props.min_lambda);
-  console.log("    - provied parameters: " + props.max_lambda);
+  console.log("    - max_lambda: " + props.max_lambda);
 
   // The four .dat files: 13.5, 16, 18, 20
   // use matching .dat file if the requested temperature matches
