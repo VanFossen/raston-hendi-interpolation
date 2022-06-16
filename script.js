@@ -175,11 +175,10 @@ function interpolateValue(dataObject, values, temp1, temp2) {
 
   console.log("");
 
-  let d1Value, d2Value;
-  for (let i = fileStart; i < fileStart + 0.002; i += 0.0001) {
-    console.log(i + "   type:" + typeof i);
-    // d1Value = d1.get(i);
-    // d2Value = d2.get(i);
+  for (let i = Number(fileStart); i < fileStart + 0.001; i += 0.0001) {
+    console.log(i.toPrecision(8) + "   type:" + typeof i);
+    console.log("val 1: " + d1.get(i.toString()));
+    console.log("val 2: " + d2.get(i.toString()));
     // console.log(d1Value + (d2Value - d1Value) * scalingFactor);
   }
 }
