@@ -1,3 +1,23 @@
+Big.max = function () {
+  var i, y,
+    x = new this(arguments[0]);
+  for (i = 1; i < arguments.length; i++) {
+    y = new this(arguments[i]);
+    if (x.lt(y)) x = y;
+  }
+  return x;
+}
+
+Big.min = function () {
+  var i, y,
+    x = new this(arguments[0]);
+  for (i = 1; i < arguments.length; i++) {
+    y = new this(arguments[i]);
+    if (x.gt(y)) x = y;
+  }
+  return x;
+}
+
 // when "Calculate Spectrum" is pressed, fetch proper .dat file or interpolate
 document.getElementById("interpolation").onclick = async function () {
   const values = {
@@ -92,7 +112,7 @@ async function fetchDataFile(baseURL, temp1, temp2) {
   return dataObject;
 }
 
-function interpolateValue(dataObject, values, temp1, temp2) {
+function fileBounds (temp) {
   /**
    * File Starts             File Ends
    * 13.5K --> 2038.4001     13.5K --> 2086.6305
@@ -100,41 +120,38 @@ function interpolateValue(dataObject, values, temp1, temp2) {
    *   18K --> 2035.384        18K --> 2086.6448
    *   20K --> 2040.3401       20K --> 2087.6247
    */
-  let fileXStart;
-  switch (temp1) {
+  switch (temp) {
     case 13.5:
-      fileXStart = 2038.4001;
-      break;
+      return {
+        start: new Big('2038.4001'),
+        end: new Big('2086.6305') 
+      }
     case 16:
-      fileXStart = 2030.2477;
-      break;
+      return {
+        start: new Big('2030.2477'),
+        end: new Big('2089.5735') 
+      }
     case 18:
-      fileXStart = 2035.384;
-      break;
+      return {
+        start: new Big('2035.384'),
+        end: new Big('2086.6448') 
+      }
     case 20:
-      fileXStart = 2040.3401;
-      break;
-    default:
-      console.log("ERROR");
+      return {
+        start: new Big('2040.3401'),
+        end: new Big('2087.6247') 
+      }
   }
+  throw(`no data for given temp: ${temp}`)
+}
 
-  let fileYStart;
-  switch (temp2) {
-    case 13.5:
-      fileYStart = 2038.4001;
-      break;
-    case 16:
-      fileYStart = 2030.2477;
-      break;
-    case 18:
-      fileYStart = 2035.384;
-      break;
-    case 20:
-      fileYStart = 2040.3401;
-      break;
-    default:
-      console.log("ERROR");
-  }
+function interpolateValue(dataObject, values, temp1, temp2) {
+ 
+  let fileXBounds = fileBounds(temp1);
+  
+
+  let fileYBounds = fileBounds(temp2);
+  
 
   let d1 = new Map(
     dataObject.data1.split("\n").map((elem) => elem.trim().split("\t"))
@@ -146,20 +163,10 @@ function interpolateValue(dataObject, values, temp1, temp2) {
 
   console.log("");
 
-  let fileStart;
-  // compare X starting value to Y starting value
-  if (fileXStart > fileYStart) {
-    // if X is larger, make Y start where X does
-    fileStart = fileXStart;
-    console.log("  d1 is larger");
-  } else if (fileXStart < fileYStart) {
-    // if Y is larger, make X start where Y does
-    fileStart = fileYStart;
-    console.log("  d2 is larger");
-  }
+  let fileStart = Big.max(fileXBounds.start, fileYBounds.start);
 
   // compare min to the starting value of d1/d2
-  if (values.min_lambda < fileXStart && values.min_lambda < fileYStart) {
+  if (new Big(values.min_lambda) < fileXStart && values.min_lambda < fileYStart) {
     //  if min is smaller than d1/d2, make min d1/d2
     values.min_lambda = fileStart;
     console.log("    change min");
