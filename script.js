@@ -1,22 +1,24 @@
 Big.max = function () {
-  var i, y,
+  var i,
+    y,
     x = new this(arguments[0]);
   for (i = 1; i < arguments.length; i++) {
     y = new this(arguments[i]);
     if (x.lt(y)) x = y;
   }
   return x;
-}
+};
 
 Big.min = function () {
-  var i, y,
+  var i,
+    y,
     x = new this(arguments[0]);
   for (i = 1; i < arguments.length; i++) {
     y = new this(arguments[i]);
     if (x.gt(y)) x = y;
   }
   return x;
-}
+};
 
 // when "Calculate Spectrum" is pressed, fetch proper .dat file or interpolate
 document.getElementById("interpolation").onclick = async function () {
@@ -112,7 +114,7 @@ async function fetchDataFile(baseURL, temp1, temp2) {
   return dataObject;
 }
 
-function fileBounds (temp) {
+function fileBounds(temp) {
   /**
    * File Starts             File Ends
    * 13.5K --> 2038.4001     13.5K --> 2086.6305
@@ -123,35 +125,32 @@ function fileBounds (temp) {
   switch (temp) {
     case 13.5:
       return {
-        start: new Big('2038.4001'),
-        end: new Big('2086.6305') 
-      }
+        start: new Big("2038.4001"),
+        end: new Big("2086.6305"),
+      };
     case 16:
       return {
-        start: new Big('2030.2477'),
-        end: new Big('2089.5735') 
-      }
+        start: new Big("2030.2477"),
+        end: new Big("2089.5735"),
+      };
     case 18:
       return {
-        start: new Big('2035.384'),
-        end: new Big('2086.6448') 
-      }
+        start: new Big("2035.384"),
+        end: new Big("2086.6448"),
+      };
     case 20:
       return {
-        start: new Big('2040.3401'),
-        end: new Big('2087.6247') 
-      }
+        start: new Big("2040.3401"),
+        end: new Big("2087.6247"),
+      };
   }
-  throw(`no data for given temp: ${temp}`)
+  throw `no data for given temp: ${temp}`;
 }
 
 function interpolateValue(dataObject, values, temp1, temp2) {
- 
+  // determine the start and end of fileX and fileY
   let fileXBounds = fileBounds(temp1);
-  
-
   let fileYBounds = fileBounds(temp2);
-  
 
   let d1 = new Map(
     dataObject.data1.split("\n").map((elem) => elem.trim().split("\t"))
@@ -163,30 +162,59 @@ function interpolateValue(dataObject, values, temp1, temp2) {
 
   console.log("");
 
+  // the fileStart will be the largest of the two
   let fileStart = Big.max(fileXBounds.start, fileYBounds.start);
 
-  // compare min to the starting value of d1/d2
-  if (new Big(values.min_lambda) < fileXStart && values.min_lambda < fileYStart) {
+  // the fileEnd will be the smallest of the two
+  let fileEnd = Big.min(fileXBounds.end, fileYBounds.end);
+
+  // if the requested min is less than fileStart, make the requested min the same as fileStart
+  if (
+    new Big(values.min_lambda) < fileXBounds.start &&
+    new Big(values.min_lambda) < fileYBounds.start
+  ) {
     //  if min is smaller than d1/d2, make min d1/d2
     values.min_lambda = fileStart;
     console.log("    change min");
   } else {
-    //  if d1/d2 is smaller than min, make d1/d2 start at min
+    //  if d1/d2 is smaller than min, make d1/d2 start at min ( for debugging, useless in actual implementaiton)
     console.log("    start at min");
   }
 
+  const bigTemp1 = new Big(temp1);
+  const bigTemp2 = new Big(temp2);
+  const bigTemperature = new Big(values.temperature);
+
   // calculate values for interpolation
-  const deltaT = temp2 - temp1;
-  const normalizeTr = values.temperature - temp1;
-  const scalingFactor = normalizeTr / deltaT;
+  const deltaT = new Big(bigTemp2.minus(bigTemp1));
+  console.log("  deltaT: " + deltaT);
 
-  console.log("");
+  const normalizeTr = new Big(bigTemperature.minus(bigTemp1));
+  console.log("  normalizeTr: " + normalizeTr);
 
-  let d1Value, d2Value;
-  for (let i = fileStart; i < fileStart + 0.002; i += 0.0001) {
-    console.log(i + "   type:" + typeof i);
-    // d1Value = d1.get(i);
-    // d2Value = d2.get(i);
-    // console.log(d1Value + (d2Value - d1Value) * scalingFactor);
+  const scalingFactor = new Big(normalizeTr.div(deltaT));
+  console.log("  scalingFactor: " + scalingFactor);
+
+  console.log(new Date());
+
+  let finalSpectrum = '';
+  for (let i = fileStart; i < fileEnd; i = i.add(0.0001)) {
+    // console.log("  " + i);
+
+    d1Value = new Big(d1.get(i.toString()));
+    d2Value = new Big(d2.get(i.toString()));
+
+    // d1 + (d2 - d1) * scale
+    let answer = new Big(
+      d1Value.add(d2Value.minus(d1Value).times(scalingFactor))
+    );
+
+    finalSpectrum += i + "\t" + answer + "\n";
+
+    // console.log(i + " " + answer);
   }
+
+  console.log(new Date());
+
+  console.log(finalSpectrum);
 }
