@@ -71,10 +71,19 @@ document.getElementById("interpolation").onclick = async function () {
     }
 
     const dataObject = await fetchDataFile(values.url, temp1, temp2);
-    interpolateValue(dataObject, values, temp1, temp2);
 
-    // let d1 = dataObject.data1.split("\n").map((elem)=>elem.trim().split("\t"))
-    // console.log({d1})
+    console.log(new Date());
+    const interpolatedSpectrum = interpolateValue(
+      dataObject,
+      values,
+      temp1,
+      temp2
+    );
+    console.log(new Date());
+
+    console.log(interpolatedSpectrum);
+
+    return interpolatedSpectrum;
   }
 };
 
@@ -160,8 +169,6 @@ function interpolateValue(dataObject, values, temp1, temp2) {
     dataObject.data2.split("\n").map((elem) => elem.trim().split("\t"))
   );
 
-  console.log("");
-
   // the fileStart will be the largest of the two
   let fileStart = Big.max(fileXBounds.start, fileYBounds.start);
 
@@ -175,10 +182,10 @@ function interpolateValue(dataObject, values, temp1, temp2) {
   ) {
     //  if min is smaller than d1/d2, make min d1/d2
     values.min_lambda = fileStart;
-    console.log("    change min");
+    // console.log("    change min");
   } else {
     //  if d1/d2 is smaller than min, make d1/d2 start at min ( for debugging, useless in actual implementaiton)
-    console.log("    start at min");
+    // console.log("    start at min");
   }
 
   const bigTemp1 = new Big(temp1);
@@ -187,20 +194,11 @@ function interpolateValue(dataObject, values, temp1, temp2) {
 
   // calculate values for interpolation
   const deltaT = new Big(bigTemp2.minus(bigTemp1));
-  console.log("  deltaT: " + deltaT);
-
   const normalizeTr = new Big(bigTemperature.minus(bigTemp1));
-  console.log("  normalizeTr: " + normalizeTr);
-
   const scalingFactor = new Big(normalizeTr.div(deltaT));
-  console.log("  scalingFactor: " + scalingFactor);
 
-  console.log(new Date());
-
-  let finalSpectrum = '';
+  let finalSpectrum = "";
   for (let i = fileStart; i < fileEnd; i = i.add(0.0001)) {
-    // console.log("  " + i);
-
     d1Value = new Big(d1.get(i.toString()));
     d2Value = new Big(d2.get(i.toString()));
 
@@ -210,11 +208,7 @@ function interpolateValue(dataObject, values, temp1, temp2) {
     );
 
     finalSpectrum += i + "\t" + answer + "\n";
-
-    // console.log(i + " " + answer);
   }
 
-  console.log(new Date());
-
-  console.log(finalSpectrum);
+  return finalSpectrum;
 }
