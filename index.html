@@ -1,17 +1,45 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Data Interpolation</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>interpolation</title>
-  <link href="style.css" rel="stylesheet" type="text/css" />
-</head>
+    <style>
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+      }
 
-<body>
-  <button id="interpolation">Run Interpolation</button>
-  <script src='https://cdn.jsdelivr.net/npm/big.js@6.2.0/big.min.js'></script>
-  <script src="script.js"></script>
-</body>
+      button {
+        width: 50px;
+        height: 50px;
+      }
 
+      #file {
+        background-color: pink;
+      }
+    </style>
+  </head>
+
+  <body>
+    <button id='file' onclick="calculateSpectrum(13.5)">13.5</button>
+    <button onclick="calculateSpectrum(14)">14</button>
+    <button onclick="calculateSpectrum(14.5)">14.5</button>
+    <button onclick="calculateSpectrum(15)">15</button>
+    <button onclick="calculateSpectrum(15.5)">15.5</button>
+    <button id='file' onclick="calculateSpectrum(16)">16</button>
+    <button onclick="calculateSpectrum(16.5)">16.5</button>
+    <button onclick="calculateSpectrum(17)">17</button>
+    <button onclick="calculateSpectrum(17.5)">17.5</button>
+    <button id='file' onclick="calculateSpectrum(18)">18</button>
+    <button onclick="calculateSpectrum(18.5)">18.5</button>
+    <button onclick="calculateSpectrum(19)">19</button>
+    <button onclick="calculateSpectrum(19.5)">19.5</button>
+    <button id='file' onclick="calculateSpectrum(20)">20</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/big.js@6.2.0/big.min.js"></script>
+    <script src="dataInterpolation.js"></script>
+  </body>
 </html>
