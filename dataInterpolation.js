@@ -102,6 +102,8 @@ async function fetchDataFile(baseURL, fileXTemp, fileYTemp) {
 
     if (fileYResponse.status === 200) {
       console.log("  response is good! Response: " + fileYResponse.status);
+    } else {
+      throw new Error(`fetch request failed: ${fileYResponse.status}.`);
     }
     const fileYData = await fileYResponse.text();
     dataObject = {
