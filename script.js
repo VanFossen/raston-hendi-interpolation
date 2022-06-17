@@ -1,3 +1,4 @@
+// find the largest Big()
 Big.max = function () {
   var i,
     y,
@@ -9,6 +10,7 @@ Big.max = function () {
   return x;
 };
 
+// find the smallest Big()
 Big.min = function () {
   var i,
     y,
@@ -37,10 +39,10 @@ document.getElementById("interpolation").onclick = async function () {
   // The four .dat files: 13.5, 16, 18, 20
   // use matching .dat file if the requested temperature matches
   if (
-    values.temperature == "13.5" ||
-    values.temperature == "16" ||
-    values.temperature == "18" ||
-    values.temperature == "20"
+    values.temperature === 13.5 ||
+    values.temperature === 16 ||
+    values.temperature === 18 ||
+    values.temperature === 20
   ) {
     console.log("  number matches existing .dat");
     console.log("    temperature: " + values.temperature);
@@ -61,11 +63,11 @@ document.getElementById("interpolation").onclick = async function () {
       temp1 = 13.5;
       temp2 = 16;
     } else if (values.temperature > 16 && values.temperature < 18) {
-      console.log("    temperature is between 13.5 and 16");
+      console.log("    temperature is between 16 and 18");
       temp1 = 16;
       temp2 = 18;
     } else if (values.temperature > 18 && values.temperature < 20) {
-      console.log("    temperature is between 13.5 and 16");
+      console.log("    temperature is between 18 and 20");
       temp1 = 18;
       temp2 = 20;
     }
@@ -156,10 +158,10 @@ function fileBounds(temp) {
   throw `no data for given temp: ${temp}`;
 }
 
-function interpolateValue(dataObject, values, temp1, temp2) {
+function interpolateValue(dataObject, values, fileXTemp, fileYTemp) {
   // determine the start and end of fileX and fileY
-  let fileXBounds = fileBounds(temp1);
-  let fileYBounds = fileBounds(temp2);
+  let fileXBounds = fileBounds(fileXTemp);
+  let fileYBounds = fileBounds(fileYTemp);
 
   let d1 = new Map(
     dataObject.data1.split("\n").map((elem) => elem.trim().split("\t"))
@@ -188,8 +190,8 @@ function interpolateValue(dataObject, values, temp1, temp2) {
     // console.log("    start at min");
   }
 
-  const bigTemp1 = new Big(temp1);
-  const bigTemp2 = new Big(temp2);
+  const bigTemp1 = new Big(fileXTemp);
+  const bigTemp2 = new Big(fileYTemp);
   const bigTemperature = new Big(values.temperature);
 
   // calculate values for interpolation
@@ -199,6 +201,8 @@ function interpolateValue(dataObject, values, temp1, temp2) {
 
   let finalSpectrum = "";
   for (let i = fileStart; i < fileEnd; i = i.add(0.0001)) {
+    // console.log(i + " " + d1.get(i.toString()) + " " + d2.get(i.toString()));
+
     d1Value = new Big(d1.get(i.toString()));
     d2Value = new Big(d2.get(i.toString()));
 
