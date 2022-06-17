@@ -84,6 +84,7 @@ document.getElementById("interpolation").onclick = async function () {
       temp2
     );
     console.log(new Date());
+    console.log(interpolatedSpectrum);
     return interpolatedSpectrum;
   }
 };
@@ -201,8 +202,14 @@ function interpolateValue(dataObject, values, fileXTemp, fileYTemp) {
 
   let finalSpectrum = "";
   let d1Value, d2Value;
-  for (let i = fileStart; i < fileEnd; i = i.add(0.0001)) {
+  console.log(fileStart + " " + fileEnd);
+  for (let i = fileStart; i <= fileEnd; i = i.add(0.0001)) {
     // console.log(i + " " + d1.get(i.toString()) + " " + d2.get(i.toString()));
+    // console.log(i + " " + d1.has(i.toString()) + " " + d2.has(i.toString()));
+
+    if (!d1.has(i.toString()) || !d2.has(i.toString())) {
+      continue;
+    }
 
     d1Value = new Big(d1.get(i.toString()));
     d2Value = new Big(d2.get(i.toString()));
