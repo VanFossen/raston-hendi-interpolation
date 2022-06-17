@@ -1,3 +1,4 @@
+import Big from "big.js";
 // find the largest Big()
 Big.max = function () {
   var i,
@@ -48,7 +49,8 @@ document.getElementById("interpolation").onclick = async function () {
     console.log("    temperature: " + values.temperature);
 
     const dataObject = await fetchDataFile(values.url, values.temperature);
-    // TODO --> Send file to graph
+
+    return dataObject.data1;
 
     // interpolate .dat file if the requested temperature does not match
   } else {
@@ -82,9 +84,6 @@ document.getElementById("interpolation").onclick = async function () {
       temp2
     );
     console.log(new Date());
-
-    console.log(interpolatedSpectrum);
-
     return interpolatedSpectrum;
   }
 };
@@ -92,7 +91,7 @@ document.getElementById("interpolation").onclick = async function () {
 // constructs URLs for the .dat files. Performs fetch request to obtain the .dat files.
 // https://www.topcoder.com/thrive/articles/fetch-api-javascript-how-to-make-get-and-post-requests
 // https://www.javascripttutorial.net/javascript-fetch-api/
-async function fetchDataFile(baseURL, temp1, temp2) {
+export async function fetchDataFile(baseURL, temp1, temp2) {
   let url1, url2;
   let response1, response2;
   let data1, data2;
@@ -105,7 +104,7 @@ async function fetchDataFile(baseURL, temp1, temp2) {
     console.log("  response is good! Response: " + response1.status);
 
   data1 = await response1.text();
-  dataObject = {
+  let dataObject = {
     data1,
   };
   if (temp2) {
@@ -154,11 +153,12 @@ function fileBounds(temp) {
         start: new Big("2040.3401"),
         end: new Big("2087.6247"),
       };
+    default:
+      throw new Error(`no data for given temp: ${temp}`);
   }
-  throw `no data for given temp: ${temp}`;
 }
 
-function interpolateValue(dataObject, values, fileXTemp, fileYTemp) {
+export function interpolateValue(dataObject, values, fileXTemp, fileYTemp) {
   // determine the start and end of fileX and fileY
   let fileXBounds = fileBounds(fileXTemp);
   let fileYBounds = fileBounds(fileYTemp);
@@ -200,6 +200,7 @@ function interpolateValue(dataObject, values, fileXTemp, fileYTemp) {
   const scalingFactor = new Big(normalizeTr.div(deltaT));
 
   let finalSpectrum = "";
+  let d1Value, d2Value;
   for (let i = fileStart; i < fileEnd; i = i.add(0.0001)) {
     // console.log(i + " " + d1.get(i.toString()) + " " + d2.get(i.toString()));
 
@@ -211,7 +212,7 @@ function interpolateValue(dataObject, values, fileXTemp, fileYTemp) {
       d1Value.add(d2Value.minus(d1Value).times(scalingFactor))
     );
 
-    finalSpectrum += i + "\t" + answer + "\n";
+    finalSpectrum += i + "\t" + answer + "\r\n";
   }
 
   return finalSpectrum;
