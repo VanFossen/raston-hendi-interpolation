@@ -1,4 +1,4 @@
-import Big from "big.js";
+// import Big from "big.js";
 // find the largest Big()
 Big.max = function () {
   var i,
@@ -84,6 +84,7 @@ document.getElementById("interpolation").onclick = async function () {
       temp2
     );
     console.log(new Date());
+    console.log(interpolatedSpectrum);
     return interpolatedSpectrum;
   }
 };
@@ -91,7 +92,7 @@ document.getElementById("interpolation").onclick = async function () {
 // constructs URLs for the .dat files. Performs fetch request to obtain the .dat files.
 // https://www.topcoder.com/thrive/articles/fetch-api-javascript-how-to-make-get-and-post-requests
 // https://www.javascripttutorial.net/javascript-fetch-api/
-export async function fetchDataFile(baseURL, temp1, temp2) {
+async function fetchDataFile(baseURL, temp1, temp2) {
   let url1, url2;
   let response1, response2;
   let data1, data2;
@@ -158,7 +159,7 @@ function fileBounds(temp) {
   }
 }
 
-export function interpolateValue(dataObject, values, fileXTemp, fileYTemp) {
+function interpolateValue(dataObject, values, fileXTemp, fileYTemp) {
   // determine the start and end of fileX and fileY
   let fileXBounds = fileBounds(fileXTemp);
   let fileYBounds = fileBounds(fileYTemp);
@@ -201,8 +202,14 @@ export function interpolateValue(dataObject, values, fileXTemp, fileYTemp) {
 
   let finalSpectrum = "";
   let d1Value, d2Value;
-  for (let i = fileStart; i < fileEnd; i = i.add(0.0001)) {
+  console.log(fileStart + " " + fileEnd);
+  for (let i = fileStart; i <= fileEnd; i = i.add(0.0001)) {
     // console.log(i + " " + d1.get(i.toString()) + " " + d2.get(i.toString()));
+    // console.log(i + " " + d1.has(i.toString()) + " " + d2.has(i.toString()));
+
+    if (!d1.has(i.toString()) || !d2.has(i.toString())) {
+      continue;
+    }
 
     d1Value = new Big(d1.get(i.toString()));
     d2Value = new Big(d2.get(i.toString()));
