@@ -28,7 +28,7 @@ async function calculateSpectrum(
     console.log("  number matches existing .dat");
 
     const dataObject = await fetchDataFile(url, temperature);
-
+    console.log(dataObject.fileXData);
     console.log("DONE");
     return dataObject.fileXData;
 
