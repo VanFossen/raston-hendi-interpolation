@@ -11,7 +11,7 @@ async function calculateSpectrum(
   max_lambda = 2090
 ) {
   const url =
-    "https://raw.githubusercontent.com/RastonLab/Virtual-HeNDI-Spectrometer/main/interpolator/spectra/OCS_";
+    "https://raw.githubusercontent.com/RastonLab/Virtual-HeNDI-Spectrometer/main/spectra/OCS_";
 
   console.log("provied parameters");
   console.log("  - temperature: " + temperature);
